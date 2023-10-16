@@ -8,7 +8,8 @@ const APP_SHELL = [
     'js/app.js',
     'img/medio_metro.jpg',
     'css/styles.css',
-    'img/ivy.jpg'
+    'img/ivy.jpg',
+    'pages/offline.html'
 ]
 
 const APP_SHELL_INMUTABLE = [
@@ -33,32 +34,32 @@ self.addEventListener('install', e=>{
 self.addEventListener('activate', e=>{
     console.log("Activado");
 })
-
 self.addEventListener("fetch", e=>{
     //5. Cache and Network race
-    const source = new Promise((resolve, reject) =>{
-        let flag = false;
-        const failsOnce = () =>{
-            // Si falló una vez aquí poner la lógica para controlarlo
-            if(flag){
-                if(/\.(png|jpg)/i.test(e.resquest.url)){
-                    resolve(caches.match('img/not-found.png'))
-                }else{
-                    reject("SourceNotFound")
-                }
-            }else{
-                flag = true;
-            }
-        }
-        fetch(e.request).then(resFetch => {
-            resFetch.ok ? resolve(resFetch) : failsOnce();
-        }).catch(failsOnce);
-        caches.match(e.request).then(sourceCache =>{
-            sourceCache.ok ? resolve(sourceCache) : failsOnce();
-        }).catch(failsOnce)
-    })
+    // const source = new Promise((resolve, reject) =>{
+    //     let flag = false;
+    //     const failsOnce = () =>{
+    //         // Si falló una vez aquí poner la lógica para controlarlo
+    //         const url = e.request.url
+    //         if(flag){
+    //             if(/\.(html)/i.test(url)){
+    //                 resolve(caches.match('pages/offline.html'))
+    //             }else{
+    //                 reject("SourceNotFound")
+    //             }
+    //         }else{
+    //             flag = true;
+    //         }
+    //     }
+    //     fetch(e.request).then(resFetch => {
+    //         resFetch.ok ? resolve(resFetch) : failsOnce();
+    //     }).catch(failsOnce);
+    //     caches.match(e.request).then(sourceCache =>{
+    //         sourceCache.ok ? resolve(sourceCache) : failsOnce();
+    //     }).catch(failsOnce)
+    // })
 
-    e.respondWith(source)
+    // e.respondWith(source)
 
     //4. Cache with network update
     //Primero todo lo devuelve del caché
@@ -72,18 +73,18 @@ self.addEventListener("fetch", e=>{
     });
     e.respondWith(source);*/
     //3. Network with cache fallback 
-    /*const source = fetch(e.request)
+    const source = fetch(e.request)
     .then(res => {
         if(!res) throw Error('Not Found');
-        caches.open(DYNAMIC).then( cache =>{
+        caches.open(STATIC).then( cache =>{
             cache.put(e.request, res)
         })
         return res.clone()
     })
     .catch(err =>{
-        return caches.match(e.request);
+        return caches.match("pages/offline.html");
     })
-    e.respondWith(source)*/
+    e.respondWith(source)
     //2. Cache with network fallback
     /*const source = caches.match(e.request)
     .then((res)=>{
@@ -99,6 +100,8 @@ self.addEventListener("fetch", e=>{
     e.respondWith(source);*/
     //1. Cache Only
     //e.respondWith(caches.match(e.request))
-})
 
-self.caches.keys().then(keys => { keys.forEach(key => console.log(key)) })
+    // const source = new Promise((resolver, reject) =>{
+
+    // })
+})
